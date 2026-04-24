@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-
-// Ganti 'tassist' dengan nama package di pubspec.yaml kamu jika berbeda
 import '../../widgets/navbar_shared.dart'; 
 
 class NavbarMahasiswa extends StatefulWidget {

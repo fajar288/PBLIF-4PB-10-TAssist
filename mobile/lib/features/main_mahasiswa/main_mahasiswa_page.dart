@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'navbar_mahasiswa.dart';
 import '../lecturer_selection/view/lecturer_selection_dashboard_page.dart';
-import '../loglearning/view/learning_placeholder_page.dart';
 
 class MainMahasiswaPage extends StatefulWidget {
   const MainMahasiswaPage({super.key});
@@ -16,8 +15,8 @@ class _MainMahasiswaPageState extends State<MainMahasiswaPage> {
   // Daftar halaman untuk tiap tab
   final List<Widget> _pages = [
     const LecturerSelectionDashboardPage(), // Tab 0
-    const LearningPlaceholderPage(),        // Tab 1 (Misal menggunakan loglearning)
-    const Scaffold(backgroundColor: Color(0xFF363C45), body: Center(child: Text("Halaman Dokumen", style: TextStyle(color: Colors.white)))), // Tab 2
+    const Scaffold(backgroundColor: Color(0xFFEEF2F6), body: Center(child: Text("kamu belum ada dosen pembimbing, fitur ini belum tersedia", textAlign: TextAlign.center, style: TextStyle(color: Colors.black)))), // Tab 1
+    const Scaffold(backgroundColor: Color(0xFFEEF2F6), body: Center(child: Text("kamu belum ada dosen pembimbing, fitur ini belum tersedia", textAlign: TextAlign.center, style: TextStyle(color: Colors.black)))), // Tab 2
   ];
 
   void _onTabTapped(int index) {

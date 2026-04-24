@@ -32,10 +32,10 @@ class NavbarShell extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16), 
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.14),
+            color: Colors.blueGrey.withOpacity(0.14),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.blueGrey.withOpacity(0.2),
               width: 1.0,
             ),
             boxShadow: [

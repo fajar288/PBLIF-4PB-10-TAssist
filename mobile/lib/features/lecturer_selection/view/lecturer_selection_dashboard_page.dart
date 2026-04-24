@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-// Path ke app.dart (naik 3 tingkat dari view > lecturer_selection > features)
 import '../../../app/app.dart';
-
-// Import lokal di folder yang sama
 import 'lecturers_page.dart';
 import 'mentoring_request_store.dart';
 import 'lecturer_detail_page.dart';
@@ -18,9 +15,6 @@ class LecturerSelectionDashboardPage extends StatefulWidget {
 class _LecturerSelectionDashboardPageState
     extends State<LecturerSelectionDashboardPage> {
   
-  // NAVBAR INTERNAL SUDAH DIHAPUS
-  // Logika UI tetap sama seperti sebelumnya, hanya fokus pada konten dashboard.
-
   final List<LecturerCategory> categories = const [
     LecturerCategory(
       title: 'Informatics Lecturers',
@@ -95,10 +89,11 @@ class _LecturerSelectionDashboardPageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF363C45),
+      // 1. Perubahan Background Color ke #EEF2F6
+      backgroundColor: const Color(0xFFEEF2F6),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 14, 12, 0),
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
           child: Column(
             children: [
               _buildHeader(),
@@ -106,7 +101,7 @@ class _LecturerSelectionDashboardPageState
               _buildTopCard(),
               const SizedBox(height: 18),
               Expanded(child: _buildBottomEmptyCard()),
-              const SizedBox(height: 20), // Space agar tidak tertutup navbar melayang
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -124,9 +119,10 @@ class _LecturerSelectionDashboardPageState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Hi, Aruna Fajar!', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w800, height: 1.1)),
+                // 2. Perubahan warna teks agar kontras dengan background terang
+                Text('Hi, Aruna Fajar!', style: TextStyle(color: Color(0xFF2D3238), fontSize: 24, fontWeight: FontWeight.w800, height: 1.1)),
                 SizedBox(height: 4),
-                Text('Welcome to TAssist', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w400)),
+                Text('Welcome to TAssist', style: TextStyle(color: Color(0xFF5A6269), fontSize: 14, fontWeight: FontWeight.w500)),
               ],
             ),
           ),
@@ -137,7 +133,11 @@ class _LecturerSelectionDashboardPageState
             width: 66, height: 66,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white.withOpacity(0.9), width: 2),
+              // Border dibuat sedikit lebih gelap agar terlihat di BG terang
+              border: Border.all(color: Colors.white, width: 2),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 2))
+              ],
               image: const DecorationImage(
                 image: NetworkImage('https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80'),
                 fit: BoxFit.cover,
@@ -152,13 +152,25 @@ class _LecturerSelectionDashboardPageState
   Widget _buildTopCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(14, 18, 14, 12),
-      decoration: BoxDecoration(color: const Color(0xFFD9DDE2), borderRadius: BorderRadius.circular(18)),
+      padding: const EdgeInsets.fromLTRB(14, 20, 14, 12),
+      // 3. Container menjadi putih dengan shadow tipis (Elevation Effect)
+      decoration: BoxDecoration(
+        color: Colors.white, 
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.black.withOpacity(0.05)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text("Let’s choose your lecturer first!", textAlign: TextAlign.center, style: TextStyle(color: Color(0xFF111111), fontSize: 15, fontWeight: FontWeight.w700)),
-          const SizedBox(height: 16),
+          const Text("Let’s choose your lecturer first!", textAlign: TextAlign.center, style: TextStyle(color: Color(0xFF111111), fontSize: 16, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 20),
           for (int i = 0; i < categories.length; i++) ...[
             _LecturerBannerCard(
               title: categories[i].title,
@@ -185,9 +197,9 @@ class _LecturerSelectionDashboardPageState
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('view all lecturers', style: TextStyle(color: Color(0xFF111111), fontSize: 14, fontWeight: FontWeight.w500)),
+            Text('view all lecturers', style: TextStyle(color: Color(0xFF111111), fontSize: 14, fontWeight: FontWeight.w600)),
             SizedBox(width: 10),
-            Icon(Icons.arrow_forward_ios_rounded, size: 17, color: Color(0xFF111111)),
+            Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Color(0xFF111111)),
           ],
         ),
       ),
@@ -201,9 +213,21 @@ class _LecturerSelectionDashboardPageState
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(color: const Color(0xFFD9DDE2), borderRadius: BorderRadius.circular(18)),
+          // 3. Konsistensi style dengan Top Card
+          decoration: BoxDecoration(
+            color: Colors.white, 
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.black.withOpacity(0.05)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
           child: request == null
-              ? const Center(child: Text("there’s nothing here...", style: TextStyle(color: Color(0xFF2B2B2B), fontSize: 16, fontWeight: FontWeight.w500)))
+              ? const Center(child: Text("there’s nothing here...", style: TextStyle(color: Color(0xFF7D848C), fontSize: 16, fontWeight: FontWeight.w500)))
               : _buildRequestItem(request),
         );
       },
@@ -219,12 +243,18 @@ class _LecturerSelectionDashboardPageState
           onTap: () => _openRequestedLecturerDetail(request),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            decoration: BoxDecoration(color: const Color(0xFF0D4AA3), borderRadius: BorderRadius.circular(14)),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0D4AA3), 
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: [
+                BoxShadow(color: const Color(0xFF0D4AA3).withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 3))
+              ]
+            ),
             child: Row(
               children: [
                 CircleAvatar(radius: 20, backgroundImage: NetworkImage(request.imageUrl)),
                 const SizedBox(width: 10),
-                Expanded(child: Text('Requested Counseling\nwith Mr. ${request.name}', style: const TextStyle(color: Colors.white, fontSize: 12))),
+                Expanded(child: Text('Requested Counseling\nwith Mr. ${request.name}', style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600))),
               ],
             ),
           ),
@@ -244,16 +274,21 @@ class _LecturerBannerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
       child: Container(
-        height: 68,
+        height: 72,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
           image: DecorationImage(image: NetworkImage(imageUrl), fit: BoxFit.cover),
+          // Shadow halus untuk banner card
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4, offset: const Offset(0, 2))
+          ]
         ),
         child: Container(
           alignment: Alignment.center,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), color: Colors.black26),
-          child: Text(title, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w800)),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), color: Colors.black.withOpacity(0.3)),
+          child: Text(title, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w800, letterSpacing: 0.5)),
         ),
       ),
     );
