@@ -382,11 +382,22 @@ class _UploadDocumentPageState extends State<UploadDocumentPage> {
 
                                       if (!mounted) return;
 
-                                      Navigator.pop(sheetContext);
-                                      _showSnackBar(
-                                        'Dokumen berhasil diunggah.',
-                                      );
+                                      // tutup sheet
+                                      if (Navigator.canPop(sheetContext)) {
+                                        Navigator.pop(sheetContext);
+                                      }
+
+                                      // tunggu sheet hilang
+                                      await Future.delayed(Duration.zero);
+
+                                      if (!mounted) return;
+
+                                      // refresh halaman
                                       await _loadDocuments();
+
+                                      if (!mounted) return;
+
+                                      _showSnackBar("Dokumen berhasil diunggah.");
                                     } catch (e) {
                                       if (!mounted) return;
 
@@ -437,6 +448,8 @@ class _UploadDocumentPageState extends State<UploadDocumentPage> {
         );
       },
     );
+
+    await Future.delayed(Duration.zero);
 
     jenisController.dispose();
     judulController.dispose();
@@ -542,11 +555,21 @@ class _UploadDocumentPageState extends State<UploadDocumentPage> {
 
                                     if (!mounted) return;
 
-                                    Navigator.pop(sheetContext);
+                                    if (Navigator.canPop(sheetContext)) {
+                                      Navigator.pop(sheetContext);
+                                    }
+
+                                    await Future.delayed(Duration.zero);
+
+                                    if (!mounted) return;
+
+                                    await _loadDocuments();
+
+                                    if (!mounted) return;
+
                                     _showSnackBar(
                                       'Versi baru dokumen berhasil diunggah.',
                                     );
-                                    await _loadDocuments();
                                   } catch (e) {
                                     if (!mounted) return;
 
@@ -555,9 +578,7 @@ class _UploadDocumentPageState extends State<UploadDocumentPage> {
                                     });
 
                                     _showSnackBar(
-                                      e
-                                          .toString()
-                                          .replaceFirst('Exception: ', ''),
+                                      e.toString().replaceFirst('Exception: ', ''),
                                       isError: true,
                                     );
                                   }
@@ -596,6 +617,8 @@ class _UploadDocumentPageState extends State<UploadDocumentPage> {
         );
       },
     );
+
+    await Future.delayed(Duration.zero);
 
     catatanController.dispose();
   }
@@ -1238,13 +1261,17 @@ class _UploadDocumentPageState extends State<UploadDocumentPage> {
   }
 
   void _showSnackBar(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? Colors.red : Colors.green,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: isError ? Colors.red : Colors.green,
+          // HAPUS behavior floating
+        ),
+      );
   }
 
   @override

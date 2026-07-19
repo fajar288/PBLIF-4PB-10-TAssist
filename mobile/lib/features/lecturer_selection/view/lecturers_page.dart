@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import '../../../core/helpers/avatar_helper.dart';
 import '../../main_mahasiswa/navbar_mahasiswa.dart';
 import '../../../mahasiswa/data/mahasiswa_service.dart';
 import 'lecturer_detail_page.dart';
@@ -505,7 +506,7 @@ class _LecturersPageState extends State<LecturersPage> {
     return Material(
       elevation: 8,
       shadowColor: Colors.black26,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(18),
       child: Container(
         constraints: const BoxConstraints(maxHeight: 360),
         padding: const EdgeInsets.symmetric(vertical: 8),
@@ -595,7 +596,7 @@ class _LecturerCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -610,18 +611,19 @@ class _LecturerCard extends StatelessWidget {
         ),
         child: isExtraLarge
             ? Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.network(
-                      lecturer.imageUrl,
-                      width: 120,
-                      height: 120,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => _buildImageFallback(),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: SizedBox(
+                      width: 110,
+                      height: 110,
+                      child: _buildAvatar(),
                     ),
                   ),
-                  const SizedBox(width: 12),
+
+                  const SizedBox(width: 16),
+
                   Expanded(
                     child: _buildLecturerInfo(),
                   ),
@@ -630,21 +632,67 @@ class _LecturerCard extends StatelessWidget {
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        lecturer.imageUrl,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => _buildImageFallback(),
-                      ),
-                    ),
+                  Flexible(
+                    flex: 7,
+                    child: _buildAvatar(),
                   ),
-                  const SizedBox(height: 8),
-                  _buildLecturerInfo(),
+                  const SizedBox(height: 10),
+                  Flexible(
+                    flex: 3,
+                    child: _buildLecturerInfo(),
+                  ),
                 ],
               ),
+      ),
+    );
+  }
+
+  Widget _buildAvatar() {
+    final borderRadius = BorderRadius.circular(14);
+
+    Widget image;
+
+    if (!AvatarHelper.hasAvatar(lecturer.avatar)) {
+      image = Image.asset(
+        'assets/images/default_avatar.jpeg',
+        fit: BoxFit.cover,
+      );
+    } else {
+      image = Image.network(
+        lecturer.imageUrl,
+        fit: BoxFit.cover,
+        loadingBuilder: (context, child, progress) {
+          if (progress == null) {
+            return child;
+          }
+
+          return Image.asset(
+            'assets/images/default_avatar.jpeg',
+            fit: BoxFit.cover,
+          );
+        },
+        errorBuilder: (_, __, ___) {
+          return Image.asset(
+            'assets/images/default_avatar.jpeg',
+            fit: BoxFit.cover,
+          );
+        },
+      );
+    }
+
+    return Center(
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: borderRadius,
+          color: const Color(0xFFF3F4F6),
+        ),
+        child: ClipRRect(
+          borderRadius: borderRadius,
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: image,
+          ),
+        ),
       ),
     );
   }
@@ -698,19 +746,6 @@ class _LecturerCard extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildImageFallback() {
-    return Container(
-      color: const Color(0xFFE5E7EB),
-      child: const Center(
-        child: Icon(
-          Icons.person_rounded,
-          color: Color(0xFF6B7280),
-          size: 42,
-        ),
-      ),
     );
   }
 }
@@ -769,6 +804,7 @@ class LecturerModel {
     required this.nid,
     this.email,
     this.profilSingkat,
+    this.avatar,
   });
 
   final String id;
@@ -779,11 +815,13 @@ class LecturerModel {
   final String nid;
   final String? email;
   final String? profilSingkat;
+  final String? avatar;
 
   String get displayName => name;
 
   factory LecturerModel.fromJson(Map<String, dynamic> json) {
     final dosenId = json['dosen_id']?.toString() ?? '';
+    final avatar = json['avatar']?.toString();
 
     return LecturerModel(
       id: dosenId,
@@ -793,22 +831,12 @@ class LecturerModel {
       quotaLeft: int.tryParse(json['sisa_kuota']?.toString() ?? '') ?? 0,
       email: json['email']?.toString(),
       profilSingkat: json['profil_singkat']?.toString(),
-      imageUrl: _getLecturerPlaceholderImage(dosenId),
+      avatar: avatar,
+      imageUrl: AvatarHelper.getAvatarUrl(
+        avatar: avatar,
+      ),
     );
   }
-}
-
-String _getLecturerPlaceholderImage(String dosenId) {
-  const images = [
-    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80',
-  ];
-
-  final idNumber = int.tryParse(dosenId) ?? 0;
-  return images[idNumber % images.length];
 }
 
 enum LecturerViewType {
@@ -821,7 +849,7 @@ extension LecturerViewTypeX on LecturerViewType {
   String get label {
     switch (this) {
       case LecturerViewType.extraLarge:
-        return 'Extra Large List';
+        return 'Medium List';
       case LecturerViewType.large:
         return 'Large List';
       case LecturerViewType.standard:
