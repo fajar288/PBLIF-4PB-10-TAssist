@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:file_picker/file_picker.dart';
 
 import '../../../core/api_config.dart';
 import '../../auth/data/auth_service.dart';
@@ -460,5 +461,59 @@ class DosenService {
     );
 
     return _decodeResponse(response);
+  }
+
+  Future<Map<String, dynamic>> updateProfile({
+    required String nama,
+    required String kuotaBimbingan,
+    String? password,
+    String? passwordConfirmation,
+    PlatformFile? avatarFile, // Ubah penamaan variabel
+  }) async {
+    try {
+      final token = await _authService.getToken();
+      if (token == null) throw Exception('Token tidak ditemukan');
+
+      var uri = Uri.parse('${ApiConfig.baseUrl}/dosen/profile');
+      var request = http.MultipartRequest('POST', uri);
+
+      request.fields['_method'] = 'PUT'; 
+      
+      request.headers.addAll({
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      });
+
+      request.fields['nama'] = nama;
+      request.fields['kuota_bimbingan'] = kuotaBimbingan;
+
+      if (password != null && password.isNotEmpty) {
+        request.fields['password'] = password;
+        request.fields['password_confirmation'] = passwordConfirmation ?? '';
+      }
+
+      // Key diubah menjadi 'avatar'
+      if (avatarFile != null && avatarFile.bytes != null) {
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'avatar', 
+            avatarFile.bytes!,
+            filename: avatarFile.name,
+          ),
+        );
+      }
+
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+      final decoded = jsonDecode(response.body);
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        return decoded;
+      } else {
+        throw Exception(decoded['message'] ?? 'Gagal update profil');
+      }
+    } catch (e) {
+      rethrow;
+    }
   }
 }

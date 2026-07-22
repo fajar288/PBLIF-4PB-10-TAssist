@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:produk/features/dosen/data/dosen_service.dart';
 
 import '../features/notifikasi/widgets/notifikasi_bell_button.dart';
+import '../features/dosen/view/dosen_edit_profile_page.dart';
 import '../model/models.dart';
 import '../theme/app_theme.dart';
 import '../widgets/custom_bottom_nav.dart';
@@ -28,6 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
     subtitle: 'Dosen Pembimbing',
     avatarText: 'D',
   );
+
+  Map<String, dynamic>? _rawProfileData;
 
   List<CounselingRequest> _requests = [];
 
@@ -63,6 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!mounted) return;
 
       setState(() {
+        _rawProfileData = profileResponse;
         _headerData = _parseProfileResponse(profileResponse);
         _requests = requests;
         _isLoading = false;
@@ -352,8 +356,62 @@ class _HomeScreenState extends State<HomeScreen> {
                         pageTitle: 'Notifications',
                       ),
                       const SizedBox(width: 10),
-                      GestureDetector(
-                        onTap: _logout,
+                      PopupMenuButton<String>(
+                        offset: const Offset(0, 60), // Menurunkan dropdown agar pas
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        onSelected: (value) async {
+                          if (value == 'edit_profile') {
+                            // Menggabungkan data dari tabel user dan dosen untuk dikirim ke UI Edit Profil
+                            final userData = _rawProfileData?['data']?['user'] as Map<String, dynamic>? ?? {};
+                            final dosenData = _rawProfileData?['data']?['dosen'] as Map<String, dynamic>? ?? {};
+                            
+                            final combinedProfile = {
+                              'nama': userData['nama'] ?? userData['name'] ?? '',
+                              'email': userData['email'] ?? '',
+                              'avatar': userData['avatar'],
+                              'kuota_bimbingan': dosenData['kuota_bimbingan'] ?? 0,
+                            };
+
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => DosenEditProfilePage(initialProfile: combinedProfile),
+                              ),
+                            );
+
+                            // Jika profil disimpan, refresh halaman dashboard untuk menarik foto/nama terbaru
+                            if (result == true && mounted) {
+                              _loadDashboardData();
+                            }
+                          } else if (value == 'logout') {
+                            _logout();
+                          }
+                        },
+                        itemBuilder: (BuildContext context) => [
+                          const PopupMenuItem<String>(
+                            value: 'edit_profile',
+                            child: Row(
+                              children: [
+                                Icon(Icons.person_outline, size: 20, color: Color(0xFF1E293B)),
+                                SizedBox(width: 12),
+                                Text('Edit Profil', style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF1E293B))),
+                              ],
+                            ),
+                          ),
+                          const PopupMenuItem<String>(
+                            value: 'logout',
+                            child: Row(
+                              children: [
+                                Icon(Icons.logout_rounded, size: 20, color: Colors.red),
+                                SizedBox(width: 12),
+                                Text('Keluar', style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600)),
+                              ],
+                            ),
+                          ),
+                        ],
+                        // UI Container asli
                         child: Container(
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
