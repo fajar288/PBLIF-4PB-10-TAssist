@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/http_client.dart';
 import '../features/auth/view/login_page.dart';
 import '../features/loglearning/view/learning_placeholder_page.dart';
 import '../features/dosen/view/dashboard_dosen_page.dart';
@@ -21,6 +22,7 @@ class TAssistApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: AuthHttpClient.navigatorKey,
       debugShowCheckedModeBanner: false,
       title: 'TAssist',
 

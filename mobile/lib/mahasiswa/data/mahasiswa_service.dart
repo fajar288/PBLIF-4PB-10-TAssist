@@ -4,9 +4,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../core/api_config.dart';
+import '../../../core/http_client.dart';
 import '../../features/auth/data/auth_service.dart';
 
-class MahasiswaService {
+class MahasiswaService with AuthInterceptorMixin {
   final AuthService _authService = AuthService();
 
   Future<Map<String, String>> _headers({bool json = false}) async {
@@ -47,6 +48,8 @@ class MahasiswaService {
     try {
       decodedBody = jsonDecode(response.body);
     } catch (_) {
+      // Check for 401 before throwing parse errors.
+      checkUnauthorized(response);
       throw Exception(
         'Response server tidak valid. Status: ${response.statusCode}',
       );
@@ -60,6 +63,7 @@ class MahasiswaService {
     final success = decoded['success'] == true;
 
     if (response.statusCode < 200 || response.statusCode >= 300 || !success) {
+      checkUnauthorized(response);
       throw Exception(_errorMessageFromDecoded(decoded));
     }
 

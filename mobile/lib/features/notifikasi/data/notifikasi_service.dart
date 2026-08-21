@@ -3,9 +3,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../../../core/api_config.dart';
+import '../../../core/http_client.dart';
 import '../../auth/data/auth_service.dart';
 
-class NotifikasiService {
+class NotifikasiService with AuthInterceptorMixin {
   final AuthService _authService = AuthService();
 
   Future<Map<String, String>> _headers({bool json = false}) async {
@@ -44,6 +45,7 @@ class NotifikasiService {
     try {
       decodedBody = jsonDecode(response.body);
     } catch (_) {
+      checkUnauthorized(response);
       throw Exception('Response server tidak valid. Status: ${response.statusCode}');
     }
 
@@ -55,6 +57,7 @@ class NotifikasiService {
     final success = decoded['success'] == true;
 
     if (response.statusCode < 200 || response.statusCode >= 300 || !success) {
+      checkUnauthorized(response);
       throw Exception(_errorMessageFromDecoded(decoded));
     }
 

@@ -3,7 +3,7 @@ import '../api_config.dart';
 class AvatarHelper {
   const AvatarHelper._();
 
-  static const String baseUrl = ApiConfig.baseUrl;
+  static String get baseUrl => ApiConfig.baseUrl;
 
   /// Avatar bawaan jika user belum memiliki foto.
   static const String defaultAvatar = 'assets/images/default_avatar.jpeg';
